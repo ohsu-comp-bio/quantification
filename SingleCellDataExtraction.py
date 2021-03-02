@@ -11,12 +11,16 @@ import skimage.measure as measure
 from pathlib import Path
 import csv
 
+import sys
+
 
 def MaskChannel(mask_loaded,image_loaded_z):
     """Function for quantifying a single channel image
 
     Returns a table with CellID according to the mask and the mean pixel intensity
     for the given channel for each cell"""
+    print(f'Mask loaded: {mask_loaded.shape}', file=sys.stderr)
+    print(f'Image loaded: {image_loaded_z.shape}', file=sys.stderr)
     dat = measure.regionprops(mask_loaded, image_loaded_z)
     n = len(dat)
     intensity_z = np.empty(n)
@@ -87,6 +91,7 @@ def PrepareData(image,z):
     to use with mc micro ilastik pipeline"""
 
     image_path = Path(image)
+    print(f'{image_path} at {z}', file=sys.stderr)
 
     #Check to see if image tif(f)
     if image_path.suffix == '.tiff' or image_path.suffix == '.tif':
@@ -135,6 +140,8 @@ def MaskZstack(masks_loaded,image,channel_names_loaded):
     #Create empty dictionary to store channel results per mask
     dict_of_chan = {m_name: [] for m_name in mask_names}
     #Get the z channel and the associated channel name from list of channel names
+    print(f'channels: {channel_names_loaded}', file=sys.stderr)
+    print(f'num channels: {len(channel_names_loaded)}', file=sys.stderr)
     for z in range(len(channel_names_loaded)):
         #Run the data Prep function
         image_loaded_z = PrepareData(image,z)
